@@ -3,9 +3,15 @@ package banking.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.security.auth.message.callback.PrivateKeyCallback.Request;
+import javax.servlet.http.HttpSession;
+
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 
+import banking.dao.UserDAO;
 import banking.entity.TransHistory;
 import banking.entity.Users;
 import banking.repository.TransHistoryRepository;
@@ -34,6 +40,10 @@ public class Services {
 
 	public Users getUserById(int userId) {
 		return repository.findById(userId).orElse(null);
+	}
+
+	public Users gestUserByName(String userName) {
+		return repository.getUserByName(userName);
 	}
 
 	public String deleteUser(int userId) {
@@ -105,5 +115,17 @@ public class Services {
 
 	public List<TransHistory> transHistory(int userId) {
 		return tRepository.getTransHistory(userId);
+	}
+
+	public boolean checkLogin(String userName, String password) {
+		List<Users> listUser = getUsers();
+		boolean check = false;
+		for (Users user : listUser) {
+			if (user.getUserName().equals(userName) && user.getPassword().equals(password)) {
+				check = true;
+				break;
+			}
+		}
+		return check;
 	}
 }
